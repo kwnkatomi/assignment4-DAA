@@ -2,12 +2,24 @@ package org.example;
 
 public class RecursiveEditDistance implements EditDistance {
 
+    private final Metrics metrics;
+
+    public RecursiveEditDistance() {
+        this(new Metrics());
+    }
+
+    public RecursiveEditDistance(Metrics metrics) {
+        this.metrics = metrics;
+    }
+
     @Override
     public int distance(String a, String b) {
         return calculate(a, b, a.length(), b.length());
     }
 
     private int calculate(String a, String b, int n, int m) {
+
+        metrics.incrementRecursiveCalls();
 
         if (n == 0) {
             return m;
@@ -25,6 +37,9 @@ public class RecursiveEditDistance implements EditDistance {
         int insert = calculate(a, b, n, m - 1);
         int replace = calculate(a, b, n - 1, m - 1);
 
-        return 1 + Math.min(delete, Math.min(insert, replace));
+        return 1 + Math.min(
+                delete,
+                Math.min(insert, replace)
+        );
     }
 }
