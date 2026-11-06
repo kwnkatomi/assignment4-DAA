@@ -75,4 +75,48 @@ class MetricsTest {
         assertEquals(8, metrics.getAllocatedCells());
     }
 
+
+    @Test
+    void testNaiveComparisonCounter() {
+
+        Metrics metrics = new Metrics();
+        NaiveSearch algorithm = new NaiveSearch(metrics);
+
+        assertEquals(
+                java.util.List.of(0, 1, 2, 3),
+                algorithm.search("AAAAA", "AA")
+        );
+
+        assertEquals(8, metrics.getComparisons());
+    }
+
+    @Test
+    void testKmpComparisonCounter() {
+
+        Metrics metrics = new Metrics();
+        KMPSearch algorithm = new KMPSearch(metrics);
+
+        assertEquals(
+                java.util.List.of(0, 1, 2, 3),
+                algorithm.search("AAAAA", "AA")
+        );
+
+        assertEquals(6, metrics.getComparisons());
+    }
+
+    @Test
+    void testKmpLpsCounter() {
+
+        Metrics metrics = new Metrics();
+        KMPSearch algorithm = new KMPSearch(metrics);
+
+        assertArrayEquals(
+                new int[]{0, 0, 1, 2},
+                algorithm.lps("ABAB")
+        );
+
+        assertEquals(3, metrics.getComparisons());
+    }
+
+
 }

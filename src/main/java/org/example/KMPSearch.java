@@ -4,6 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class KMPSearch implements StringSearch {
+    private final Metrics metrics;
+
+    public KMPSearch() {
+        this(new Metrics());
+    }
+
+    public KMPSearch(Metrics metrics) {
+        this.metrics = metrics;
+    }
+
     public int[] lps(String pattern) {
 
         int m = pattern.length();
@@ -13,7 +23,7 @@ public class KMPSearch implements StringSearch {
         int i = 1;
 
         while (i < m) {
-
+            metrics.incrementComparisons();
             if (pattern.charAt(i) == pattern.charAt(len)) {
                 len++;
                 lps[i] = len;
@@ -53,25 +63,20 @@ public class KMPSearch implements StringSearch {
         int j = 0;
 
         while (i < n) {
-
+            metrics.incrementComparisons();
             if (text.charAt(i) == pattern.charAt(j)) {
                 i++;
                 j++;
-            }
 
-            if (j == m) {
-
-                matches.add(i - j);
-                j = prefix[j - 1];
-
-            } else if (i < n &&
-                    text.charAt(i) != pattern.charAt(j)) {
-
-                if (j != 0) {
+                if (j == m) {
+                    matches.add(i - j);
                     j = prefix[j - 1];
-                } else {
-                    i++;
                 }
+
+            } else if (j != 0) {
+                j = prefix[j - 1];
+            } else {
+                i++;
             }
         }
 

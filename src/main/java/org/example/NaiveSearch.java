@@ -4,6 +4,16 @@ import java.util.List;
 
 public class NaiveSearch implements StringSearch {
 
+    private final Metrics metrics;
+
+    public NaiveSearch() {
+        this(new Metrics());
+    }
+
+    public NaiveSearch(Metrics metrics) {
+        this.metrics = metrics;
+    }
+
     @Override
     public List<Integer> search(String text, String pattern) {
 
@@ -26,16 +36,17 @@ public class NaiveSearch implements StringSearch {
 
             int j = 0;
 
-            while (j < m &&
-                    text.charAt(i + j) == pattern.charAt(j)) {
+            while (j < m) {
+                metrics.incrementComparisons();
+                if (text.charAt(i + j) != pattern.charAt(j)) {
+                    break;
+                }
                 j++;
             }
-
             if (j == m) {
                 matches.add(i);
             }
         }
-
         return matches;
     }
 }
