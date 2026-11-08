@@ -97,6 +97,7 @@ public class ExperimentRunner {
             int n,
             String[] input,
             PrintWriter writer) {
+        validateEditDistance(input);
 
         for (int w = 0; w < WARMUPS; w++) {
 
@@ -212,6 +213,7 @@ public class ExperimentRunner {
             int n,
             String[] input,
             PrintWriter writer) {
+        validateStringSearch(input);
 
         for (int w = 0; w < WARMUPS; w++) {
 
@@ -295,6 +297,40 @@ public class ExperimentRunner {
                         writer
                 );
             }
+        }
+    }
+
+    private static void validateEditDistance(String[] input) {
+
+        int table = new TableEditDistance().distance(
+                input[0], input[1]
+        );
+
+        int twoRows = new TwoRowEditDistance().distance(
+                input[0], input[1]
+        );
+
+        if (table != twoRows) {
+            throw new IllegalStateException(
+                    "Edit Distance mismatch! Table=" + table
+                            + ", TwoRows=" + twoRows
+            );
+        }
+    }
+
+    private static void validateStringSearch(String[] input) {
+
+        java.util.List<Integer> naive =
+                new NaiveSearch().search(input[0], input[1]);
+
+        java.util.List<Integer> kmp =
+                new KMPSearch().search(input[0], input[1]);
+
+        if (!naive.equals(kmp)) {
+            throw new IllegalStateException(
+                    "String Search mismatch! Naive=" + naive
+                            + ", KMP=" + kmp
+            );
         }
     }
 }
