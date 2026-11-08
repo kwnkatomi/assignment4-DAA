@@ -22,12 +22,13 @@ public class ExperimentRunner {
         try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(csvPath))) {
 
             writer.println(
-                    "algorithm,input,n,run,time_ms," +
+                    "algorithm,input,n,m,run,time_ms," +
                             "recursive_calls,dp_cell_updates," +
                             "comparisons,allocated_cells"
             );
             runEditDistanceExperiments(writer);
             runSearchExperiments(writer);
+            runPatternLengthExperiments(writer);
         }
 
         System.out.println("\nResults saved to: " + csvPath.toAbsolutePath());
@@ -134,10 +135,11 @@ public class ExperimentRunner {
             times[run] = timeMs;
 
             writer.printf(Locale.US,
-                    "%s,%s,%d,%d,%.6f,%d,%d,%d,%d%n",
+                    "%s,%s,%d,%d,%d,%.6f,%d,%d,%d,%d%n",
                     name,
                     inputType,
                     n,
+                    input[1].length(),
                     run + 1,
                     timeMs,
                     metrics.getRecursiveCalls(),
@@ -248,10 +250,11 @@ public class ExperimentRunner {
             times[run] = timeMs;
 
             writer.printf(Locale.US,
-                    "%s,%s,%d,%d,%.6f,%d,%d,%d,%d%n",
+                    "%s,%s,%d,%d,%d,%.6f,%d,%d,%d,%d%n",
                     name,
                     inputType,
                     n,
+                    input[1].length(),
                     run + 1,
                     timeMs,
                     metrics.getRecursiveCalls(),
@@ -269,4 +272,29 @@ public class ExperimentRunner {
                 name, inputType, n, median);
     }
 
+    private static void runPatternLengthExperiments(PrintWriter writer) {
+
+        int textLength = 50_000;
+        int[] patternLengths = {5, 10, 20, 40, 80, 160};
+
+        System.out.println("\nPattern Length Experiments");
+
+        InputGenerator generator = new InputGenerator(SEED);
+
+        for (int m : patternLengths) {
+
+            String[] input = generator.worstCaseSearch(textLength, m);
+
+            for (String algorithm : new String[]{"Naive", "KMP"}) {
+
+                benchmarkSearch(
+                        algorithm,
+                        "PatternLength_m" + m,
+                        textLength,
+                        input,
+                        writer
+                );
+            }
+        }
+    }
 }
